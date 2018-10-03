@@ -341,4 +341,53 @@ nav h1 a {
 #restaurant-hours td {
   color: #666;
 }
+/* Begin Form style */
+form input, form textarea {
+	width: 80%;
+	float: left;
+  margin-right: 100%;
+  height: 24px;
+}
+
+form {
+	background-color: #fff;
+ 	border: 2px solid #f3f3f3;
+ 	display: block;
+ 	list-style-type: none;
+ 	margin: 30px auto 30px auto;
+ 	overflow: hidden;
+ 	padding: 10px 20px 20px;
+ 	position: relative;
+ 	width: 85%;
+}
+
+form label {
+	width: 100%;
+	float: left;
+	text-align: left;
+}
+
+form textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+.review-header{
+  padding: 1em;
+  color: #252831;
+  font-weight: bold;
+  margin-bottom: -2.7em;
+  text-decoration: underline;
+}
+button {
+	background-color: #EE7600;
+	border: none;
+	color: #fff;
+	font-size: 10pt;
+	margin: 15px 0 0;
+	padding: 8px 30px 10px;
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+	float: left;
+}
 

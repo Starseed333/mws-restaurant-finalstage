@@ -101,4 +101,9 @@
     font-size: 0.7em;
     margin: 0.7em;
   }
+  @media screen and (max-width: 1000px) {
+    #review-submission-container {
+      width: 100%;
+    }
+  }
 
