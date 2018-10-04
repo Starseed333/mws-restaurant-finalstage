@@ -52,7 +52,7 @@
       <section id="review-submission-container">
         <h3 class="review-header">Submit a review</h3>
         <div id="review-submission">
-        <form id="user-review" onsubmit="">
+        <form id="user-review" onsubmit="return submitReview(this);">
           <label for="review-name">Name</label>
           <input type="text" name="review-name" id="review-name">
           <label for="review-rating">Rating</label>

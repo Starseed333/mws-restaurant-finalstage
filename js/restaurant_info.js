@@ -175,3 +175,58 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+//Submit the review via the form
+submitReview = (form) => {
+  const reviewName = form.elements.namedItem('review-name');
+  const reviewRating = form.elements.namedItem('review-rating');
+  const reviewComments = form.elements.namedItem('review-comments');
+  const restaurantID = self.restaurant.id;
+
+  if (!(reviewName && reviewRating && reviewComments)) {
+    return false;
+  }
+ 
+  // POST content
+  const postData = {
+    'restaurant_id': restaurantID,
+    'name': reviewName.value,
+    'rating': reviewRating.value,
+    'comments': reviewComments.value
+  }
+
+  // Submit post
+  DBHelper.postRestaurantReview(postData, (error, response) => {
+    if (error) {
+      displayReviewSubmissionError(error);
+      return false;
+    }
+    displayReviewSubmissionSuccess();
+    displayRecentlySubmittedReview(response);
+  });
+  return false;
+}
+//Succesful submission
+displayReviewSubmissionSuccess = () => {
+  const modalData = {
+    title: 'Success',
+    details: 'Your review has been submitted successfully.'
+  }
+  
+}
+//Error on submission
+displayReviewSubmissionError = (error) => {
+  const modalData = {
+    title: 'Error',
+    details: 'Your review will be resubmitted when possible. We apologize for the inconvenience.'
+  }
+  
+}
+//Display new review 
+displayRecentlySubmittedReview = (reviewData) => {
+  const reviewsList = document.getElementById('reviews-list');
+  const newReview = createReviewHTML(reviewData);
+  newReview.style.backgroundColor = '#3397DB;';
+  reviewsList.insertBefore(newReview, reviewsList.childNodes[0]);
+}
+
+
