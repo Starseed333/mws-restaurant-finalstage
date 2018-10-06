@@ -52,6 +52,17 @@ fetchRestaurantFromURL = (callback) => {
         console.error(error);
         return;
       }
+      if (!self.restaurant.reviews) {
+        restaurant.reviews = DBHelper.fetchReviews(self.restaurant.id, (error, reviews) => {
+          if (!error) {
+            self.restaurant.reviews = reviews;
+            // fill reviews
+            //remove reviews
+            removeReviewsHTML();
+            fillReviewsHTML();
+          }
+        });
+      }
       fillRestaurantHTML();
       callback(null, restaurant)
     });
@@ -109,9 +120,17 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h3');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  DBHelper.getPendingReviews((error, reviews) => {
+    //load prior reviews..
+    reviews.forEach((review) => {
+      DBHelper.postRestaurantReview(review, (error, response) => {
+        if (error) {
+          console.log("fillReviewsHTML " + error);
+        }
+        displayRecentlySubmittedReview(response);
+      });
+    });
+  });
 
   if (!reviews) {
     const noReviews = document.createElement('p');
@@ -124,6 +143,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+}
+removeReviewsHTML = () => {
+  const list = document.getElementById('reviews-list');
+  list.innerHTML = "";
 }
 
 /**

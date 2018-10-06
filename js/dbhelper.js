@@ -177,6 +177,42 @@ class DBHelper {
       }
     });
   }
+  static fetchReviews(id, callback) {
+    DBHelper.openDatabase().then(db => {
+      const tx = db.transaction(['reviews'], 'readwrite');
+      const store = tx.objectStore('reviews');
+      store.get(id).then(data => {
+        if (data) {
+          callback(null, data);
+          // If newer data available from server, fetch and display that.
+          DBHelper._fetchReviewsAndAddToDB(id, callback);
+        } else {
+          DBHelper._fetchReviewsAndAddToDB(id, callback);
+        }
+      })
+    });
+  }
+
+  static _fetchReviewsAndAddToDB(id, callback) {
+    fetch(DBHelper.DATABASE_REVIEWS_URL + `/?restaurant_id=${id}`)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(json) {
+      DBHelper.openDatabase().then(db => {
+        const tx = db.transaction(['reviews'], 'readwrite');
+        const store = tx.objectStore('reviews');
+        store.delete(id);
+        store.put(json, id);
+      });
+      callback(null, json);
+    })
+    .catch(error => {
+      const errorResponse = (`Failed to fetch review from restaurant id: ${id}`);
+      callback(errorResponse, null);
+    });
+  }
+
 
   /**
    * Restaurant page URL.
@@ -241,6 +277,22 @@ class DBHelper {
     });
   }
 
+  /**
+   * Get pending reviews
+   */
+  static getPendingReviews(callback) {
+    DBHelper.openDatabase().then(function(db) {
+      const store = db.transaction(['offline-reviews'], 'readwrite')
+      .objectStore('offline-reviews');
+      store.getAll().then(function(data) {
+        if (data.length !== 0) {
+          store.clear().then(() => {
+            callback(null, data);
+          })
+        }
+      })
+    });
+  }
   static openDatabase() {
     if (!'serviceWorker' in navigator) {
       return Promise.resolve();
