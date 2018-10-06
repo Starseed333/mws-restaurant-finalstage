@@ -293,6 +293,24 @@ class DBHelper {
       })
     });
   }
+  /**
+   * Add a review to idb
+   */
+  static addReviewToDb(review) {
+    DBHelper.openDatabase().then(db => {
+      const store = db.transaction(['reviews'], 'readwrite')
+      .objectStore('reviews');
+      store.get(review.restaurant_id).then(data => {
+        let reviews = review;
+        if (data) {
+          data.push(review);
+          reviews = data;
+        }
+        store.put(reviews, review.restaurant_id);
+      });
+    });
+  }
+
   static openDatabase() {
     if (!'serviceWorker' in navigator) {
       return Promise.resolve();
