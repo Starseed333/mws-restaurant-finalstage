@@ -389,4 +389,25 @@ button {
 	text-decoration: none;
 	float: left;
 }
+.loader {
+  border: 16px solid #EE7600;
+  border-radius: 50%;
+  border-top: 16px solid #3397db;
+  border-bottom: 16px solid #3397db;
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 

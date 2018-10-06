@@ -252,7 +252,7 @@ class DBHelper {
   /**
    * POST a review to the database
    */
-  static postRestaurantReview(postData) {
+  static postRestaurantReview(postData, callback) {
     const postURL = 'http://localhost:1337/reviews'
     fetch(postURL, {
       method: 'POST',
@@ -264,6 +264,8 @@ class DBHelper {
     })
     .then(json => {
       // Confirm review submission
+      callback(null,json)
+      DBHelper.addReviewToDb(json);
       console.log(json);
     })
     .catch(error => {

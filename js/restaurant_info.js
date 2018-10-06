@@ -218,6 +218,14 @@ submitReview = (form) => {
   if (!(reviewName && reviewRating && reviewComments)) {
     return false;
   }
+    // Display loader
+    const reviewDiv = document.getElementById('review-submission');
+    reviewDiv.style.display = 'none';
+    
+    const loader = document.createElement('div');
+    loader.classList.add('loader');
+    loader.id = ('review-loader');
+    document.getElementById('review-submission-container').append(loader);
  
   // POST content
   const postData = {
