@@ -372,7 +372,7 @@ form textarea {
 	min-height: 100px;
 	resize: vertical;
 }
-.review-header{
+.review-header, .reviewsHeader{
   padding: 1em;
   color: #252831;
   font-weight: bold;
