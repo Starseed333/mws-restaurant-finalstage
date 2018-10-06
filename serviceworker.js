@@ -30,21 +30,34 @@ self.addEventListener('install', function(event) {
   );
 });
 
-// Retrieve data from cache
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.open(staticCacheName).then(function(cache){
-      return cache.match(event.request).then(function(response){
-        return response || fetch(event.request).then(function(response){
-          cache.put(event.request, response.clone());
-            console.log("new data included to cache", event.request.url);
-            return response;
-        }).catch(function(error){
-            console.log("Error!! ", error);
-        });
-      });
-    })
-  );
+	if (event.request.url.indexOf('restaurant.html') > -1) {
+		event.respondWith(
+			caches.match('restaurant.html')
+			.then(function(response) {
+				if (response) return response;
+				return fetch(event.request);
+			})
+			.catch(function(error) {
+				console.error('Error in restaurant.html!');
+				console.error(error);
+				console.error(event.request);
+			})
+		);
+	} else {
+		event.respondWith(
+			caches.match(event.request)
+			.then(function(response) {
+				if (response) return response;
+				return fetch(event.request);
+			})
+			.catch(function(error) {
+				console.error('Error in caches.match');
+				console.error(error);
+				console.error(event.request);
+			})
+		);
+	}
 });
 
 //delete old cache

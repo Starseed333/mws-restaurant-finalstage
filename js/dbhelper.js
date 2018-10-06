@@ -1,52 +1,4 @@
 /**
- * idb.
- */
-const idbApp = (function() {
-  'use strict';
-
-  if(!navigator.serviceWorker) {
-    return Promise.resolve();
-  }
-
-  const dbPromise = idb.open('restaurantreviews', 1, function(upgradeDb) {
-    switch (upgradeDb.oldVersion) {
-      case 0:
-        upgradeDb.createObjectStore('restaurants', {
-          keyPath: 'id'
-        });
-    }
-  });
-
-  function addRestaurantById(restaurant) {
-    return dbPromise.then(function(db) {
-      const tx = db.transaction('restaurants', 'readwrite');
-      const store = tx.objectStore('restaurants');
-      store.put(restaurant);
-      return tx.complete;
-    }).catch(function(error) {
-      console.log(error);
-    });
-  }
-
-  function fetchRestaurantById(id) {
-    return dbPromise.then(function(db) {
-      const tx = db.transaction('restaurants');
-      const store = tx.objectStore('restaurants');
-      return store.get(parseInt(id));
-    }).then(function(restaurantObject) {
-      return restaurantObject;
-    }).catch(function(error) {
-      console.log(error);
-    });
-  }
-
-  return {
-    dbPromise: (dbPromise),
-    addRestaurantById: (addRestaurantById),
-    fetchRestaurantById: (fetchRestaurantById),
-  };
-})();
-/**
  * Common database helper functions.
  */
 class DBHelper {
@@ -59,51 +11,83 @@ class DBHelper {
     const port = 1337 // Change this to your server port
     return `http://localhost:${port}/restaurants/`;
   }
+  // Retrieve reviews
+  static get DATABASE_REVIEWS_URL() {
+    const port = 1337
+    return `http://localhost:${port}/reviews`;
+  }
 
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    fetch(DBHelper.DATABASE_URL)
-    .then(response => response.json())
-    .then(function(jsonResponse){
-      callback(null, jsonResponse);
-    })
-    .catch(function(error){
-      const errorMessage = (`Request failed. Return the status of ${error}`);
-      callback(errorMessage, null);
+    DBHelper.openDatabase().then(function(db) {
+      const store = db.transaction(['restaurants']).objectStore('restaurants');
+      store.getAll().then(function(data) {
+        if (data.length > 0) {
+          callback(null, data);
+        } else {
+          fetch(DBHelper.DATABASE_URL)
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(json) {
+            DBHelper.openDatabase().then(function(db) {
+              const tx = db.transaction(['restaurants'], 'readwrite');
+              const store = tx.objectStore('restaurants');
+              json.forEach(restaurant => {
+                store.put(restaurant);
+              });
+            });
+            callback(null, json);
+          })
+          .catch(error => {
+            const errorResponse = (`Request failed. Return the status of ${error}`);
+            callback(errorResponse, null);
+          });
+        }
+      });
     });
+
   }
 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    const idbRestaurant = idbApp.fetchRestaurantById(id);
-    idbRestaurant.then(function(idbRestaurantObject) {
-      if (idbRestaurantObject) {
-        //console.log("fetchRestaurantById");
-        callback(null, idbRestaurantObject);
-        return;
-      } else {
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
-          let idbMessages = idbApp.addRestaurantById(restaurant);
-          console.log(idbMessages);
-          callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
-          }
+    DBHelper.openDatabase().then(function(db) {
+      const store = db.transaction(['restaurants']).objectStore('restaurants');
+      store.get(parseInt(id)).then(function(data) {
+        if (data) {
+          callback(null, data);
+        } else {
+          DBHelper._fetchRestaurantByIdAndAddToDb(id, callback);
         }
       });
-    }
-  });
-}
+    });
+  }
+
+  /**
+   * Fetch a restaurant by its ID and add it to the database
+   */
+  static _fetchRestaurantByIdAndAddToDb(id, callback) {
+    fetch(`${DBHelper.DATABASE_URL}/${id}`)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(json) {
+      DBHelper.openDatabase().then(function(db) {
+        const tx = db.transaction(['restaurants'], 'readwrite');
+        const store = tx.objectStore('restaurants');
+        store.put(json);
+      });
+      callback(null, json);
+    })
+    .catch(error => {
+      const errorResponse = (`Request failed. Return the status of ${error}`);
+      callback(errorResponse, null);
+    });
+  }
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
@@ -228,6 +212,55 @@ class DBHelper {
       })
       marker.addTo(newMap);
     return marker;
+  }
+  /**
+   * POST a review to the database
+   */
+  static postRestaurantReview(postData) {
+    const postURL = 'http://localhost:1337/reviews'
+    fetch(postURL, {
+      method: 'POST',
+      body: JSON.stringify(postData),
+      headers : {'Content-Type': 'application/json'}
+    })
+    .then(response => {
+      return response.json();
+    })
+    .then(json => {
+      // Confirm review submission
+      console.log(json);
+    })
+    .catch(error => {
+      // If not catch the error
+      console.log(error);
+      DBHelper.openDatabase().then(function(db) {
+        const tx = db.transaction(['offline-reviews'], 'readwrite');
+        const store = tx.objectStore('offline-reviews');
+        store.put(postData);
+      });
+    });
+  }
+
+  static openDatabase() {
+    if (!'serviceWorker' in navigator) {
+      return Promise.resolve();
+    }
+  
+    return idb.open('restaurantreviews', 1, function(upgradeDb) {
+      const restaurants = upgradeDb.createObjectStore('restaurants', {
+        keyPath: 'id'
+      });
+
+      const offlineReviews = upgradeDb.createObjectStore('offline-reviews', {
+        autoIncrement: true
+      });
+
+      const offlineFavorites = upgradeDb.createObjectStore('offline-favorites', {
+        keyPath: 'id'
+      });
+
+      const reviews = upgradeDb.createObjectStore('reviews', {autoIncrement: true});
+    });
   }
 
 }
