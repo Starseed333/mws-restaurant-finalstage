@@ -107,6 +107,7 @@ nav h1 a {
     color: orange;
     text-decoration: none;
     font-size: 18px;
+    font-weight: bold;
 }
 
 /* Add a color on mouse-over */
@@ -311,10 +312,7 @@ nav h1 a {
   position: relative;
   width: 85%;
 }
-.review-header {
-  background-color: #333
-  height: 5em;
-}
+
 .review-header p {
   color: #fff;
 }
@@ -337,6 +335,8 @@ nav h1 a {
 }
 #reviews-list li p {
   margin: 0 0 10px;
+  font-family: Helvetica;
+  font-size: 1em;
 }
 #restaurant-hours td {
   color: #666;
@@ -350,15 +350,15 @@ form input, form textarea {
 }
 
 form {
-	background-color: #fff;
- 	border: 2px solid #f3f3f3;
- 	display: block;
- 	list-style-type: none;
- 	margin: 30px auto 30px auto;
- 	overflow: hidden;
- 	padding: 10px 20px 20px;
- 	position: relative;
- 	width: 85%;
+ background-color: #fff;
+ border: 2px solid #f3f3f3;
+ display: block;
+ list-style-type: none;
+ margin: auto;
+ overflow: hidden;
+ padding: 10px 20px 20px;
+ position: relative;
+ width: 85%;
 }
 
 form label {
@@ -375,7 +375,6 @@ form textarea {
   padding: 1em;
   color: #252831;
   font-weight: bold;
-  margin-bottom: -2.7em;
   text-decoration: underline;
 }
 button {
@@ -410,4 +409,22 @@ button {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+#review-submission-container {
+  justify-content: center;
+  /* padding: 39px 63px 4px; */
+}
+/* Modal */
+.review-modal {
+  z-index: 1;
+	top: 0px;
+	padding: 39px;
+  background-color: #fff;
+  width: initial;
+  margin-top: 18px;
+  border-radius: 50px;
+}
 
+.review-modal-button {
+	position: absolute;
+	margin: auto;
+}

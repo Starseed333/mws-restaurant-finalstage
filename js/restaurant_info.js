@@ -248,13 +248,48 @@ submitReview = (form) => {
   });
   return false;
 }
+/**
+ * Display confirmation modal
+ */
+displayConfirmationModal = (options) => {
+ 
+  const reviewModal = document.createElement('div');
+  reviewModal.classList.add('review-modal');
+  reviewModal.id = 'review-modal';
+  // Modal tittle
+  if (options.title) {
+    const modalTitle = document.createElement('h3');
+    modalTitle.innerHTML = options.title;
+    modalTitle.classList.add('review-modal-title');
+    reviewModal.append(modalTitle);
+  }
+  // Modal details
+  if (options.details) {
+    const modalDetails = document.createElement('p');
+    modalDetails.innerHTML = options.details;
+    modalDetails.classList.add('review-modal-details');
+    reviewModal.append(modalDetails);
+  }
+  // Modal Ok Button
+  const modalConfirm = document.createElement('button');
+  modalConfirm.innerHTML = 'Ok';
+  modalConfirm.classList.add('review-modal-button');
+  modalConfirm.addEventListener('click', () => {
+    const reviewModal = document.getElementById('review-modal');
+    reviewModal.parentNode.removeChild(reviewModal);
+  });
+  reviewModal.append(modalConfirm);
+
+  // Add it all to review section
+  document.getElementById('review-submission-container').append(reviewModal);
+}
 //Succesful submission
 displayReviewSubmissionSuccess = () => {
   const modalData = {
     title: 'Success',
     details: 'Your review has been submitted successfully.'
   }
-  
+  displayConfirmationModal(modalData);
 }
 //Error on submission
 displayReviewSubmissionError = (error) => {
@@ -262,7 +297,7 @@ displayReviewSubmissionError = (error) => {
     title: 'Error',
     details: 'Your review will be resubmitted when possible. We apologize for the inconvenience.'
   }
-  
+  displayConfirmationModal(modalData);
 }
 //Display new review 
 displayRecentlySubmittedReview = (reviewData) => {
@@ -286,5 +321,3 @@ hideLoader = () => {
   }
   return false;
 }
-
-
