@@ -238,9 +238,11 @@ submitReview = (form) => {
   // Submit post
   DBHelper.postRestaurantReview(postData, (error, response) => {
     if (error) {
+      hideLoader();
       displayReviewSubmissionError(error);
       return false;
     }
+    hideLoader();
     displayReviewSubmissionSuccess();
     displayRecentlySubmittedReview(response);
   });
@@ -268,6 +270,21 @@ displayRecentlySubmittedReview = (reviewData) => {
   const newReview = createReviewHTML(reviewData);
   newReview.style.backgroundColor = '#3397DB;';
   reviewsList.insertBefore(newReview, reviewsList.childNodes[0]);
+}
+/**
+ * Hide loader
+ */
+hideLoader = () => {
+  const reviewLoader = document.getElementById('review-loader');
+  if (reviewLoader) {
+    reviewLoader.parentNode.removeChild(reviewLoader);
+    document.getElementById('review-name').value = '';
+    document.getElementById('review-rating').value = '';
+    document.getElementById('review-comments').value = '';
+    document.getElementById('review-submission').style.display = 'block';
+    return true;
+  }
+  return false;
 }
 
 
