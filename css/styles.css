@@ -290,6 +290,8 @@ nav h1 a {
 }
 #reviews-container {
   padding: 30px 40px 80px;
+  overflow: scroll;
+  height: 200px !important;
 }
 #reviews-container h2 {
   color: #f58500;
@@ -348,6 +350,9 @@ form input, form textarea {
 	float: left;
   margin-right: 100%;
   height: 24px;
+  border: 1px solid #333;
+  font-size: 1em;
+  font-family: Helvetica;
 }
 
 form {
@@ -365,15 +370,22 @@ form {
 form label {
 	width: 100%;
 	float: left;
-	text-align: left;
+  text-align: left;
+  font-weight: bold;
 }
 
 form textarea {
 	min-height: 100px;
 	resize: vertical;
 }
-.review-header, .reviewsHeader{
+.review-header {
   padding: 1em;
+  color: #252831;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.reviewsHeader{
+  text-align: center;
   color: #252831;
   font-weight: bold;
   text-decoration: underline;
@@ -421,9 +433,10 @@ button {
 	top: 0px;
 	padding: 39px;
   background-color: #fff;
-  width: initial;
   margin-top: 18px;
   border-radius: 50px;
+  margin: 12px 22px 22px;
+  
 }
 
 .review-modal-button {

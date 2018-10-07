@@ -27,6 +27,10 @@
     font-size: 2.4em;
     margin-left: 70px;
   }
+  #reviews-container{
+    overflow: scroll;
+    height: 150px;
+  }
   .review-name {
     font-size: 1.5em;
   }
@@ -104,5 +108,8 @@
   .review-comments {
     font-size: 0.7em;
     margin: 0.7em;
+  }
+  #reviews-container{
+    height: initial;
   }
 }
