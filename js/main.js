@@ -108,7 +108,7 @@ updateRestaurants = () => {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
-  })
+  });
 }
 
 /**
@@ -171,20 +171,23 @@ createRestaurantHTML = (restaurant) => {
   anchor.append(more);
   li.append(anchor);
 
+  // Favorite button
+  li.append(DBHelper.favoriteButton(restaurant));
+
   return li
 }
 
 /**
  * Add markers for current restaurants to the map.
- */
+  */
 addMarkersToMap = (restaurants = self.restaurants) => {
-    restaurants.forEach(restaurant => {
-     // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
-    marker.on("click", onClick);
-    function onClick() {
-      window.location.href = marker.options.url;
-    }
-  });
+  restaurants.forEach(restaurant => {
+   // Add marker to the map
+  const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
+  marker.on("click", onClick);
+  function onClick() {
+    window.location.href = marker.options.url;
+  }
+});
 }
 

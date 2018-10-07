@@ -84,6 +84,11 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = `Restaurant image of ${restaurant.name}`;
 
+  // Add favorite button
+  const starButton = DBHelper.favoriteButton(restaurant);
+  starButton.classList.add('restaurant-favorite-star');
+  const primaryStarButton = document.getElementById('favorite-button');
+  primaryStarButton.parentNode.replaceChild(starButton, primaryStarButton);
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
@@ -91,8 +96,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
-  fillReviewsHTML();
 }
 
 /**
@@ -164,9 +167,9 @@ createReviewHTML = (review) => {
   	date.classList.add('review-date');
   	li.appendChild(date);
   }
-  //Update the date
-   // Last update
-   if (review.updatedAt && review.updatedAt !== review.createdAt) {
+//Update the date
+  // Last update
+  if (review.updatedAt && review.updatedAt !== review.createdAt) {
   	const updatedDate = document.createElement('p');
   	updatedDate.innerHTML = `Updated: ${new Date(review.updatedAt)}`;
   	date.classList.add('review-date');
@@ -219,14 +222,14 @@ submitReview = (form) => {
     return false;
   }
     // Display loader
-    const reviewDiv = document.getElementById('review-submission');
-    reviewDiv.style.display = 'none';
-    
-    const loader = document.createElement('div');
-    loader.classList.add('loader');
-    loader.id = ('review-loader');
-    document.getElementById('review-submission-container').append(loader);
- 
+  const reviewDiv = document.getElementById('review-submission');
+  reviewDiv.style.display = 'none';
+  
+  const loader = document.createElement('div');
+  loader.classList.add('loader');
+  loader.id = ('review-loader');
+  document.getElementById('review-submission-container').append(loader);
+
   // POST content
   const postData = {
     'restaurant_id': restaurantID,
@@ -252,18 +255,18 @@ submitReview = (form) => {
  * Display confirmation modal
  */
 displayConfirmationModal = (options) => {
- 
+
   const reviewModal = document.createElement('div');
   reviewModal.classList.add('review-modal');
   reviewModal.id = 'review-modal';
-  // Modal tittle
+// Modal tittle
   if (options.title) {
     const modalTitle = document.createElement('h3');
     modalTitle.innerHTML = options.title;
     modalTitle.classList.add('review-modal-title');
     reviewModal.append(modalTitle);
   }
-  // Modal details
+// Modal details
   if (options.details) {
     const modalDetails = document.createElement('p');
     modalDetails.innerHTML = options.details;
@@ -299,11 +302,11 @@ displayReviewSubmissionError = (error) => {
   }
   displayConfirmationModal(modalData);
 }
-//Display new review 
+//Display new review
 displayRecentlySubmittedReview = (reviewData) => {
   const reviewsList = document.getElementById('reviews-list');
   const newReview = createReviewHTML(reviewData);
-  newReview.style.backgroundColor = '#3397DB;';
+  newReview.style.backgroundColor = '#3397DB';
   reviewsList.insertBefore(newReview, reviewsList.childNodes[0]);
 }
 /**

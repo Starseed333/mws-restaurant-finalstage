@@ -9,7 +9,7 @@ class DBHelper {
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants/`;
+    return `http://localhost:${port}/restaurants`;
   }
 // Retrieve reviews
   static get DATABASE_REVIEWS_URL() {
@@ -263,14 +263,10 @@ class DBHelper {
       return response.json();
     })
     .then(json => {
-      // Confirm review submission
-      callback(null,json)
+      callback(null, json);
       DBHelper.addReviewToDb(json);
-      console.log(json);
     })
     .catch(error => {
-      // If not catch the error
-      console.log(error);
       DBHelper.openDatabase().then(function(db) {
         const tx = db.transaction(['offline-reviews'], 'readwrite');
         const store = tx.objectStore('offline-reviews');
@@ -312,6 +308,108 @@ class DBHelper {
         store.put(reviews, review.restaurant_id);
       });
     });
+  }
+// Amen favorite status
+  static amendFavorite(restaurant) {
+    DBHelper.openDatabase().then(db => {
+      const store = db.transaction(['restaurants'], 'readwrite')
+      .objectStore('restaurants');
+      store.put(restaurant);
+    });
+  }
+
+  //Pending favorite
+  static pendingFavorite(id, callback) {
+    DBHelper.openDatabase().then(function(db) {
+      const store = db.transaction(['offline-favorites'], 'readwrite')
+      .objectStore('offline-favorites');
+      store.get(id).then(function(data) {
+        if (data) {
+          store.delete(id);
+          callback(null, data);
+        } else {
+          callback(null, null);
+        }
+      })
+      .catch(error => {
+        callback(error, null);
+      })
+    });
+  }
+  // Restaurant toggle
+  static toggleFavorite(restaurant, callback) {
+    const url = `${DBHelper.DATABASE_URL}/${restaurant.id}/?${restaurant.is_favorite === 'true' ? 'is_favorite=false' : 'is_favorite=true'}`
+    fetch(url, {method: 'PUT'})
+    .then(response => response.json())
+    .then(json => {
+      DBHelper.amendFavorite(json);
+      callback(null, json);
+    })
+    .catch(error => {
+      DBHelper.openDatabase().then(db => {
+        const tx = db.transaction(['offline-favorites'], 'readwrite');
+        const store = tx.objectStore('offline-favorites');
+        store.get(restaurant.id).then(data => {
+          if (data) {
+            store.delete(restaurant.id);
+          } else {
+            store.put({
+              id: restaurant.id,
+              favorite: restaurant.is_favorite === 'true' ? true : false
+            });
+          }
+        });
+      });
+      callback(error, null);
+    });
+  }
+  //Favorite button
+  static favoriteButton(restaurant) {
+    const favorite = document.createElement('button');
+    favorite.classList.add('favorite-star');
+    favorite.setAttribute('tabindex', '0');
+    if (restaurant.is_favorite === 'true') {
+      favorite.innerHTML = '&#9733';
+      favorite.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
+      favorite.classList.add('favorited');    
+    } else {
+      favorite.innerHTML = '&#9734';
+      favorite.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+      favorite.classList.remove('favorited');
+    }
+    DBHelper.pendingFavorite(restaurant.id, (error, favorite) => {
+      if (error) {
+        console.error(error);
+      } else if (favorite){
+        DBHelper.toggleFavorite(favorite, (error, response) => {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log(response);
+          }
+        });
+      }
+    });
+    favorite.setAttribute('role', 'button');
+    favorite.addEventListener('click', (event) => {
+      DBHelper.toggleFavorite(restaurant, (error, response) => {
+        if (error) {
+          console.error(error);
+        } else {
+          restaurant.is_favorite = response.is_favorite;
+          if (response.is_favorite === 'true') {
+            favorite.innerHTML = '&#9733';
+            favorite.setAttribute('aria-label', `Remove ${restaurant.name} from favorites`);
+            favorite.classList.add('favorited');  
+          } else {
+            favorite.innerHTML = '&#9734';
+            favorite.setAttribute('aria-label', `Add ${restaurant.name} to favorites`);
+            favorite.classList.remove('favorited');
+          }
+        }
+      });
+    });
+    return favorite;
   }
 
   static openDatabase() {
