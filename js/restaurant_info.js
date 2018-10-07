@@ -306,7 +306,7 @@ displayReviewSubmissionError = (error) => {
 displayRecentlySubmittedReview = (reviewData) => {
   const reviewsList = document.getElementById('reviews-list');
   const newReview = createReviewHTML(reviewData);
-  newReview.style.backgroundColor = '#3397DB';
+  newReview.style.backgroundColor = '#FFFFCC';
   reviewsList.insertBefore(newReview, reviewsList.childNodes[0]);
 }
 /**

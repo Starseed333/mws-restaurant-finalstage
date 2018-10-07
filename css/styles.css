@@ -430,3 +430,25 @@ button {
 	position: absolute;
   margin: auto;
 }
+/* Favorite button */
+.favorite-star{
+  margin-top: -56px;
+  float:right !important;
+  font-size: 35px;
+  border: none;
+  background: none;
+  color: #000000;
+}
+/* Star color */
+.favorited{
+  color: #CC0000;
+}
+.restaurant-favorite-star {
+  width: 70px;
+  height: 70px;
+  margin-right: 29px;
+  margin-bottom: 10px;
+  padding: 0;
+  border: 2px solid #000000;
+  border-radius: 50px;
+}

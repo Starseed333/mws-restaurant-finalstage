@@ -167,7 +167,7 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('p');
   more.innerHTML = 'View Details';
   more.classList.add('button');
-
+  
   anchor.append(more);
   li.append(anchor);
 
