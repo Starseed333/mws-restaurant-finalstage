@@ -11,7 +11,7 @@ class DBHelper {
     const port = 1337 // Change this to your server port
     return `http://localhost:${port}/restaurants/`;
   }
-  // Retrieve reviews
+// Retrieve reviews
   static get DATABASE_REVIEWS_URL() {
     const port = 1337
     return `http://localhost:${port}/reviews`;
@@ -234,7 +234,7 @@ class DBHelper {
   static imageALTForRestaurant(restaurant) {
     return (`${restaurant.alt_text}`);
   }
-
+  
 
   /**
    * Map marker for a restaurant.
@@ -248,7 +248,7 @@ class DBHelper {
       })
       marker.addTo(newMap);
     return marker;
-  }
+    }
   /**
    * POST a review to the database
    */
@@ -276,6 +276,7 @@ class DBHelper {
         const store = tx.objectStore('offline-reviews');
         store.put(postData);
       });
+      callback(error, null);
     });
   }
 
