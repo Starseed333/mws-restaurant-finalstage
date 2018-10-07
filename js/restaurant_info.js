@@ -324,3 +324,30 @@ hideLoader = () => {
   }
   return false;
 }
+/**
+ * Register the service worker.
+ */
+registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
+        console.log('Success registration worked!', registration.scope);
+      }).catch(function(error) {
+        console.log('Error registration failed!', error);
+      })
+    })
+  } else {
+    console.log('Sorry service worker not supported!');
+  }
+}
+registerServiceWorker();
+
+window.onload = () => {
+  fetchRestaurantFromURL((error, restaurant) => {
+    if (error) { 
+      console.error(error);
+    } else {
+      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+    }
+  });
+}

@@ -1,4 +1,4 @@
-const staticCacheName = 'restaurant-reviews-v1';
+const staticCacheName = 'restaurant-reviews-v2';
 //file images | scripts
 const cached_urls = [
   '/',
@@ -18,7 +18,8 @@ const cached_urls = [
   'js/idb.js',
   'js/dbhelper.js',
   'js/main.js',
-  'js/restaurant_info.js'
+  'js/restaurant_info.js',
+  'serviceworker.js'
 ]
 
 // cache
